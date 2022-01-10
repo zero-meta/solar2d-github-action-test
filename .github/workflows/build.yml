@@ -51,7 +51,6 @@ jobs:
           - Xcode_13.2
         target:
           - template
-          - template-angle
         platform:
           - iphone
         include:
@@ -191,52 +190,6 @@ jobs:
         with:
           name: Snap
           path: ./output/*.snap
-
-
-  Linux-Simulator:
-    needs:
-      - native
-      - webtemplate
-      - linux
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Get Linux Simulator template
-        uses: actions/download-artifact@v1
-        with:
-          name: Linux-Simulator-Template
-      - name: Get Webtemplate
-        uses: actions/download-artifact@v1
-        with:
-          name: Webtemplate
-      - name: Get Native
-        uses: actions/download-artifact@v1
-        with:
-          name: Native
-      - name: Unpack CoronaSimulator tgz
-        run: |
-          mkdir simulator
-          tar -xvzf Linux-Simulator-Template/CoronaSimulator-x86-64.tgz -C simulator
-      - name: Put webtemplate in place
-        run: cp -v Webtemplate/webtemplate.zip simulator/Solar2D/Resources/
-      - name: Put Android resources in place
-        run: |
-          tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/resource/android-template.zip          
-          mkdir -p simulator/Solar2D/Resources/Native/Corona/android/resource
-          cp -v CoronaEnterprise/Corona/android/resource/android-template.zip simulator/Solar2D/Resources/Native/Corona/android/resource/
-          tar -xvzf Native/CoronaNative.tar.gz CoronaEnterprise/Corona/android/lib/gradle/Corona.aar
-          mkdir -p simulator/Solar2D/Resources/Native/Corona/android/lib/gradle
-          cp -v CoronaEnterprise/Corona/android/lib/gradle/Corona.aar simulator/Solar2D/Resources/Native/Corona/android/lib/gradle/
-      - name: Put Linux Simulator in place
-        run: |
-         mkdir -p output
-         cd simulator
-         tar -czvf ../output/CoronaSimulator-x86-64.tgz ./
-      - name: Upload Linux Simulator artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Simulator-Linux
-          path: ./output/CoronaSimulator-x86-64.tgz
-
 
   native:
     needs: source-code
@@ -508,7 +461,6 @@ jobs:
     needs:
       - Windows-Simulator
       - macOS-Simulator
-      - Linux-Simulator
       - linux
       - CoronaCards-Android
       - CoronaCards-iOS
@@ -545,9 +497,6 @@ jobs:
           name: Simulator-Windows
       - uses: actions/download-artifact@v1
         with:
-          name: Simulator-Linux
-      - uses: actions/download-artifact@v1
-        with:
           name: CoronaCards-iOS
       - uses: actions/download-artifact@v1
         with:
@@ -555,10 +504,6 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: Native
-      - uses: actions/download-artifact@v1
-        with:
-          name: Snap
-      - run: find Snap -name '*.snap' -execdir mv -v {} s2d.snap \; -quit
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -586,24 +531,6 @@ jobs:
           asset_path: ./Simulator-Windows/Corona-${{ env.BUILD }}.msi
           asset_name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD }}.msi
           asset_content_type: application/x-msi
-      - name: Upload Release Asset for Linux Snap
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Snap/s2d.snap
-          asset_name: Solar2D-Linux-${{ env.YEAR }}.${{ env.BUILD }}_amd64.snap
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset for Linux Simulator Binaries
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Simulator-Linux/CoronaSimulator-x86-64.tgz
-          asset_name: Solar2D-Linux-Binaries-x86_64-${{ env.YEAR }}.${{ env.BUILD }}.tgz
-          asset_content_type: application/gzip
       - name: Upload Release Asset Corona Cards iOS
         uses: actions/upload-release-asset@v1
         env:
