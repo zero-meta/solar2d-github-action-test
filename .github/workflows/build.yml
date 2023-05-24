@@ -77,4 +77,5 @@ jobs:
           set /a majorVersion = %DATE:~-2%
           set /a minorVersion = %BUILD_NUMBER / 10000
           set /a buildNumber = %BUILD_NUMBER %% 10000
+          echo %BUILD_NUMBER% %DATE%
           echo %majorVersion% %minorVersion% %buildNumber%
