@@ -9,11 +9,11 @@ on:
       buildNumber:
         description: 'Build Number'
         required: true
-        default: '9999'
+        default: '13686.1'
       buildYear:
         description: 'Build Year'
         required: true
-        default: '2100'
+        default: '2023'
 
 
 env:
@@ -74,8 +74,6 @@ jobs:
       - name: Build Corona Simulator
         shell: cmd
         run: |
-          set DATE 2023
-          set BUILD_NUMBER 13686.1
           set /a majorVersion = %DATE:~-2%
           set /a minorVersion = %BUILD_NUMBER / 10000
           set /a buildNumber = %BUILD_NUMBER %% 10000
