@@ -2,6 +2,15 @@
 
 set -ex
 
+if [ -n "$BUILD_NUMBER" ]
+then
+	sed -i .bak -E "s/define[[:space:]]*Rtt_BUILD_REVISION.*$/define Rtt_BUILD_REVISION $BUILD_NUMBER/" librtt/Core/Rtt_Version.h
+	sed -i .bak -E "s/define[[:space:]]*Rtt_BUILD_YEAR[[:space:]]*[[:digit:]]*$/define Rtt_BUILD_YEAR $YEAR/" librtt/Core/Rtt_Version.h
+    sed -i .bak -E "s/^#define[[:space:]]*Rtt_IS_LOCAL_BUILD[[:space:]]*[[:digit:]]*$/\/\/ #define Rtt_IS_LOCAL_BUILD/" librtt/Core/Rtt_Version.h
+
+	rm -f librtt/Core/Rtt_Version.h.bak
+fi
+
 # platform mac
 sign1_a='CODE_SIGN_IDENTITY = "Developer ID Application: Corona Labs Inc"'
 sign1_b='CODE_SIGN_IDENTITY = "Developer ID Application: Labo Lado Inc"'
@@ -19,6 +28,7 @@ sed -i.bak "s/${sign1_a}/${sign1_b}/g" platform/mac/CoronaBuilder.xcodeproj/proj
 sed -i.bak "s/${sign1_a}/${sign1_b}/g" platform/mac/CoronaShell/CoronaShell.xcodeproj/project.pbxproj
 sed -i.bak "s/${sign1_a}/${sign1_b}/g" platform/mac/car.xcodeproj/project.pbxproj
 sed -i.bak "s/${sign1_a}/${sign1_b}/g" platform/mac/lua.xcodeproj/project.pbxproj
+sed -i.bak "s/${sign4_a}/${sign4_b}/g" bin/mac/build_dmg.sh
 sed -i.bak "s/${sign1_a}/${sign1_b}/g" platform/mac/ratatouille.xcodeproj/project.pbxproj
 sed -i.bak "s/${sign2_a}/${sign2_b}/g" platform/mac/ratatouille.xcodeproj/project.pbxproj
 sed -i.bak "s/${sign3_a}/${sign3_b}/g" platform/mac/ratatouille.xcodeproj/project.pbxproj
@@ -28,6 +38,7 @@ rm -f platform/mac/CoronaBuilder.xcodeproj/project.pbxproj.bak
 rm -f platform/mac/CoronaShell/CoronaShell.xcodeproj/project.pbxproj.bak
 rm -f platform/mac/car.xcodeproj/project.pbxproj.bak
 rm -f platform/mac/lua.xcodeproj/project.pbxproj.bak
+rm -f bin/mac/build_dmg.sh.bak
 rm -f platform/mac/ratatouille.xcodeproj/project.pbxproj.bak
 
 # platform iphone

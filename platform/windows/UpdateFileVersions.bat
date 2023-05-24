@@ -51,6 +51,8 @@ if ERRORLEVEL 1 goto OnError
 
 @echo on
 
+echo %majorVersion% %minorVersion% %buildNumber%
+
 goto:eof
 
 
