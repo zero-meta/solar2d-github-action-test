@@ -57,60 +57,6 @@ jobs:
       - run: ./tools/GHAction/daily_env.sh
         shell: bash
       - run: mkdir -f docs
-      - name: Get Sample Code
-        uses: actions/checkout@v2
-        with:
-          repository: coronalabs/samples-coronasdk
-          path: docs/SampleCode
-      - name: Clean-up docs
-        run: rm -rf docs/SampleCode/.git docs/SampleCode/.gitignore
-        shell: bash
-      - name: Move docs outside the directory
-        run: mv docs ../docs
-      - name: Get Webtemplate
-        uses: actions/download-artifact@v1
-        with:
-          name: Webtemplate
-      - name: Put webtemplate in place
-        run: cp -v Webtemplate/webtemplate.zip platform/resources/
-        shell: bash
-      - name: Get NX Template
-        shell: bash
-        run: |
-          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/nxtemplate > platform/resources/nxtemplate
-      - name: Get Linux template
-        uses: actions/download-artifact@v1
-        with:
-          name: Linux-Template
-      - name: Put webtemplate in place
-        run: |
-          cp -v Linux-Template/linuxtemplate_x64.tgz platform/resources/
-        shell: bash
-      - name: Get Corona Native
-        uses: actions/download-artifact@v1
-        with:
-          name: Native
-      - name: Put native in place
-        shell: cmd
-        run: |
-          mkdir "%WORKSPACE%\platform\windows\Bin"
-          cd "%WORKSPACE%\platform\windows\Bin"
-          rmdir /s /q "Native"
-          tar -xvzf "%WORKSPACE%\Native\CoronaNative.tar.gz"
-          rm ._CoronaEnterprise
-          mv CoronaEnterprise Native
-          del /q /f /a Native\.*
-          del /q /f /a Native\Icon?
-      - name: Put JRE in place
-        shell: bash
-        run: |
-          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/jre.win32.7z -o jre.win32.7z
-          7z x jre.win32.7z -o"platform/windows/Bin" -y
-      - name: Put redistributables in place
-        shell: bash
-        run: |
-          curl -sL https://github.com/coronalabs/binary-data/releases/download/1.0/redist.win32.7z -o redist.win32.7z
-          7z x redist.win32.7z -o"platform/windows/Bin/redist" -y
       - name: Build Corona Simulator
         shell: cmd
         run: |
@@ -121,13 +67,3 @@ jobs:
           devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
           WIN_CERT_PASSWORD: ${{ secrets.WinCertPassword }}
-      - name: Copy Simulator
-        run: |
-          mkdir output
-          cp -v ./platform/windows/Bin/Corona.SDK.Installer/Corona.msi output/Corona-$BUILD.msi
-        shell: bash
-      - name: Upload Widnows Corona artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: Simulator-Windows
-          path: ./output
